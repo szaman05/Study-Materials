@@ -5,7 +5,6 @@
 ## 🎯 Learning Objectives
 
 By the end of today, you'll be able to:
-- Explain the client-server model and the basic lifecycle of a web request.
 - Understand the role of HTML, CSS, and JavaScript in web development.
 - Set up a basic local development environment using VS Code.
 - Create a well-structured HTML document using standard boilerplate.
@@ -14,23 +13,6 @@ By the end of today, you'll be able to:
 - Validate your HTML code.
 
 ## 🔑 Key Concepts
-
-### How the Web Works: A Deeper Dive
-
-The web primarily operates on a **client-server model**:
-
-1.  **Client**: Your device (laptop, phone) running a web browser (Chrome, Firefox, Safari).
-2.  **Request**: You type a URL (e.g., `https://www.example.com`) or click a link. Your browser sends an **HTTP Request** to the server associated with that URL. This involves:
-    *   **DNS Lookup**: Translating the human-readable domain name (`www.example.com`) into a server IP address (e.g., `93.184.216.34`).
-    *   **HTTP/HTTPS**: The protocol used for communication. HTTPS is the secure version.
-3.  **Server**: A powerful computer (or network of computers) hosting the website files. It processes the client's request.
-4.  **Response**: The server sends back an **HTTP Response** containing the requested resources (HTML, CSS, JavaScript files, images, etc.).
-5.  **Rendering**: The client's browser receives the files and interprets them:
-    *   **HTML**: Builds the structure (the Document Object Model or DOM).
-    *   **CSS**: Applies styling and layout.
-    *   **JavaScript**: Adds interactivity and dynamic behavior.
-
-Think of it like ordering a custom-built castle model: You (client) send instructions (HTTP request) to the workshop (server). The workshop builds the model parts (HTML, CSS, JS) and sends them back (HTTP response). You then assemble and display the model (browser rendering).
 
 ### HTML: The Skeleton of the Web
 
@@ -215,117 +197,8 @@ HTML5 introduced elements that describe their content's meaning, improving acces
 -   **Maintainability**: Code is easier to read and understand for developers (including your future self).
 -   **Styling Hooks**: Provides meaningful hooks for CSS without relying solely on classes or IDs.
 
-## 🛠️ Setting Up Your Development Environment
-
-1.  **Text Editor/IDE**: [Visual Studio Code (VS Code)](https://code.visualstudio.com/) is highly recommended. It's free, powerful, and has a vast extension ecosystem.
-2.  **Web Browser**: Modern browsers like [Google Chrome](https://www.google.com/chrome/), [Mozilla Firefox](https://www.mozilla.org/firefox/), Safari, or Edge. They all come with excellent **Developer Tools** (usually opened by pressing F12).
-3.  **VS Code Extensions (Recommended)**:
-    -   **Live Server**: Launches a local development server with live reload feature. Right-click your HTML file and select "Open with Live Server". Invaluable for seeing changes instantly.
-    -   **Prettier - Code formatter**: Automatically formats your code to keep it consistent and readable.
-    -   **HTML CSS Support / IntelliSense for CSS class names**: Provides autocompletion for CSS.
-    -   **Auto Rename Tag**: Automatically renames the matching closing tag when you rename an opening tag.
-    -   **Material Icon Theme**: Adds helpful icons to files in the explorer.
-
-## 💪 Practical Exercise: Build Your Castle Homepage v2
-
-Let's enhance the castle homepage using more tags.
-
-1.  Create a folder named `my-digital-castle-v2`.
-2.  Inside it, create `index.html`.
-3.  Create a subfolder named `images`. Find a small castle image online (ensure it's free to use, e.g., from Unsplash, Pexels) and save it inside the `images` folder (e.g., `castle.jpg`).
-4.  Open `index.html` in VS Code and add the following structure, replacing placeholders:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Homepage for the legendary Digital Castle, built with HTML.">
-    <title>My Digital Castle - Home</title>
-    <!-- Link to CSS will go here later -->
-</head>
-<body>
-    <header>
-        <h1>Welcome to My Digital Castle</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li> <!-- We'll create this later -->
-                <li><a href="#contact">Contact</a></li> <!-- Link to a section on this page -->
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section aria-labelledby="about-heading"> <!-- Use aria-labelledby for accessibility -->
-            <h2 id="about-heading">About This Majestic Castle</h2>
-            <img src="images/castle.jpg" alt="A grand view of the Digital Castle" width="300"> <!-- Adjust width as needed -->
-            <p>Founded in the year of the Digital Dawn, this castle stands as a testament to the power of <strong>HTML</strong> and the web.</p>
-            <p>It features:</p>
-            <ul>
-                <li>Strong semantic foundations</li>
-                <li>Accessible design principles</li>
-                <li>Future expansions planned with CSS and JavaScript!</li>
-            </ul>
-        </section>
-
-        <section aria-labelledby="features-heading">
-            <h2 id="features-heading">Key Features</h2>
-            <ol>
-                <li>The Great Hall (Built with `header`, `nav`, `h1`)</li>
-                <li>The Main Keep (Constructed using `main`, `article`, `section`)</li>
-                <li>The Whispering Walls (Styled later with CSS)</li>
-                <li>The Interactive Moat (Powered by JavaScript eventually)</li>
-            </ol>
-        </section>
-
-        <article aria-labelledby="legend-heading">
-            <h2 id="legend-heading">A Castle Legend</h2>
-            <p>They say that deep within the castle's code, a secret message lies hidden. Only those who master the <em>web fundamentals</em> can hope to find it.</p>
-        </article>
-
-        <section id="contact" aria-labelledby="contact-heading"> <!-- Target for the #contact link -->
-            <h2 id="contact-heading">Contact the Castle Keeper</h2>
-            <p>For inquiries, please reach out via <a href="mailto:keeper@digitalcastle.example.com">email</a>.</p>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 My Digital Castle. All rights reserved.</p>
-        <p>Built with HTML by [Your Name]</p>
-    </footer>
-
-</body>
-</html>
-```
-
-5.  Save the file. Right-click it in VS Code and choose "Open with Live Server". Your basic castle homepage should appear in your browser!
-
-## ✅ HTML Validation
-
-It's crucial to write valid HTML. Errors can cause browsers to render pages unpredictably and can harm accessibility and SEO.
--   Use the [W3C HTML Validator](https://validator.w3.org/). You can validate by URL, file upload, or direct input. Fix any errors it reports.
-
-## 🔍 Challenge Tasks
-
-1.  **Create an "About" Page**: Create a new file `about.html` in the same folder. Give it the basic HTML structure. Add a heading "About the Digital Castle" and some paragraphs describing its fictional history. Link back to `index.html`. Update the "About" link in `index.html`'s navigation to point to `about.html`.
-2.  **Add a Table**: In `about.html`, add a section called "Castle Statistics" and create a simple `<table>` showing data like "Year Founded", "Number of Towers", "Main Material". Use `<thead>`, `<tbody>`, `<tr>`, `<th>`, and `<td>`.
-3.  **Embed a Map (Optional Advanced)**: Find the HTML embed code for a location on Google Maps (or OpenStreetMap) and add it to the "Contact" section in `index.html`.
-4.  **Explore More Tags**: Look up and try using tags like `<blockquote>`, `<cite>`, `<time>`, `<abbr>`.
-
-## 📚 Additional Resources
-
--   [MDN Web Docs: HTML (HyperText Markup Language)](https://developer.mozilla.org/en-US/docs/Web/HTML) - The definitive resource.
--   [HTML Reference by MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference) - Comprehensive list of all HTML elements.
--   [W3Schools HTML Tutorial](https://www.w3schools.com/html/) - Good for quick examples and interactive learning.
--   [Interneting Is Hard: HTML & CSS](https://www.internetingishard.com/) - Beginner-friendly tutorials.
--   [Can I use...](https://caniuse.com/) - Check browser compatibility for HTML, CSS, and JS features.
-
 ## 🏰 Castle Builder's Note
 
 You've now laid a solid, well-structured foundation for your digital castle using HTML. Every tag, every attribute, every semantic element contributes to its strength and meaning. Keep practicing, validate your work, and remember that clean, semantic HTML is the bedrock of any great website.
 
 ---
-
-**Tomorrow:** We'll start decorating our castle! We'll dive into **CSS Basics** to add colors, fonts, and basic layouts, bringing our HTML structure to life.
