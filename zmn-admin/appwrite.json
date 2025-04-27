@@ -1,0 +1,239 @@
+{
+  "projectId": "zmn-admin",
+  "projectName": "zmn-admin",
+  "settings": {
+    "services": {
+      "account": true,
+      "avatars": true,
+      "databases": true,
+      "locale": true,
+      "health": true,
+      "storage": true,
+      "teams": true,
+      "users": true,
+      "functions": true,
+      "graphql": true,
+      "messaging": true
+    },
+    "auth": {
+      "methods": {
+        "jwt": true,
+        "phone": true,
+        "invites": true,
+        "anonymous": true,
+        "email-otp": true,
+        "magic-url": true,
+        "email-password": true
+      },
+      "security": {
+        "duration": 31536000,
+        "limit": 0,
+        "sessionsLimit": 10,
+        "passwordHistory": 0,
+        "passwordDictionary": false,
+        "personalDataCheck": false,
+        "sessionAlerts": false,
+        "mockNumbers": []
+      }
+    }
+  },
+  "databases": [
+    {
+      "$id": "zmn-admin",
+      "name": "zmn-admin",
+      "enabled": true
+    }
+  ],
+  "collections": [
+    {
+      "$id": "userProfile",
+      "$permissions": [
+        "create(\"users\")",
+        "read(\"users\")",
+        "update(\"users\")",
+        "delete(\"users\")"
+      ],
+      "databaseId": "zmn-admin",
+      "name": "userProfile",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 36,
+          "default": null
+        },
+        {
+          "key": "fullName",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255,
+          "default": null
+        },
+        {
+          "key": "email",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255,
+          "default": null
+        },
+        {
+          "key": "phone",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 20,
+          "default": null
+        },
+        {
+          "key": "role",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50,
+          "default": "user"
+        },
+        {
+          "key": "roleDisplayName",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 100,
+          "default": "User"
+        },
+        {
+          "key": "teamId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 36,
+          "default": null
+        },
+        {
+          "key": "createdBy",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 36,
+          "default": null
+        },
+        {
+          "key": "isActive",
+          "type": "boolean",
+          "required": false,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "address",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500,
+          "default": null
+        },
+        {
+          "key": "city",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 100,
+          "default": null
+        },
+        {
+          "key": "country",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 100,
+          "default": null
+        },
+        {
+          "key": "postalCode",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 128,
+          "default": null
+        },
+        {
+          "key": "profileImageUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 1024,
+          "default": null
+        },
+        {
+          "key": "updatedBy",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 36,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "key": "index_userId",
+          "type": "key",
+          "status": "available",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "index_role",
+          "type": "key",
+          "status": "available",
+          "attributes": ["role"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "index_team",
+          "type": "key",
+          "status": "available",
+          "attributes": ["teamId"],
+          "orders": ["ASC"]
+        }
+      ]
+    }
+  ],
+  "buckets": [
+    {
+      "$id": "userProfile",
+      "$permissions": [
+        "read(\"users\")",
+        "create(\"users\")",
+        "update(\"users\")",
+        "delete(\"users\")"
+      ],
+      "fileSecurity": true,
+      "name": "userProfile",
+      "enabled": true,
+      "maximumFileSize": 5000000,
+      "allowedFileExtensions": ["jpg", "jpeg", "png", "gif", "webp"],
+      "compression": "gzip",
+      "encryption": true,
+      "antivirus": true
+    }
+  ],
+  "teams": [
+    {
+      "$id": "admin",
+      "name": "admin"
+    },
+    {
+      "$id": "editor",
+      "name": "editor"
+    },
+    {
+      "$id": "viewer",
+      "name": "viewer"
+    }
+  ]
+}
