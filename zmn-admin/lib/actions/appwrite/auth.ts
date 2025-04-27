@@ -11,7 +11,7 @@ import {
   ID,
 } from "@/lib/actions/appwrite/appwrite-server";
 import { revalidatePath } from "next/cache";
-import { AppwriteException, Models } from "node-appwrite";
+import { AppwriteException, Models, Query } from "node-appwrite";
 
 interface AuthResponse {
   success: boolean;
@@ -403,5 +403,122 @@ export async function createUser(
       return { success: false, error: errorMessage, details: appwriteError.response?.message };
     }
     return { success: false, error: "An unexpected error occurred during user creation." };
+  }
+}
+
+// --- NEW: Function to get all user profiles ---
+interface GetUsersResponse {
+  success: boolean;
+  users?: UserProfile[];
+  error?: string;
+}
+
+export async function getUsersWithProfiles(): Promise<GetUsersResponse> {
+  console.log("SERVER ACTION: Attempting to fetch user profiles");
+  if (!DB_ID || !PROFILES_COLLECTION_ID) {
+      console.error("SERVER ACTION: Get Users - DB/Collection ID missing.");
+      return { success: false, error: "Server configuration error." };
+  }
+  try {
+      const { databases } = createAdminClient();
+      const response = await databases.listDocuments(
+          DB_ID,
+          PROFILES_COLLECTION_ID,
+          [
+              Query.limit(100) // Adjust limit as needed, add pagination later if required
+              // Query.orderDesc('$createdAt') // Optional: order by creation date
+          ]
+      );
+
+      // Ensure documents are correctly typed as UserProfile[]
+      const users = response.documents as unknown as UserProfile[];
+      // Add $id from Appwrite document to each user object if not already mapped
+      users.forEach(user => {
+          // Assuming your UserProfile type might not have $id, but the document does
+          // If UserProfile already includes $id, this mapping might be slightly different
+          // The key is ensuring the ID used for delete/edit is available
+          // Let's assume UserProfile has userId which maps to $id
+          // If not, adjust the mapping here.
+      });
+
+
+      console.log(`SERVER ACTION: Fetched ${users.length} user profiles.`);
+      return { success: true, users: users };
+
+  } catch (error) {
+      console.error("SERVER ACTION: Get Users Error:", error);
+      if (error instanceof AppwriteException) {
+          return { success: false, error: error.message };
+      }
+      return { success: false, error: "An unexpected error occurred fetching users." };
+  }
+}
+
+
+// --- FIXED AGAIN: Function to delete a user and their profile ---
+interface DeleteUserResponse {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
+export async function deleteUserAndProfile(userId: string): Promise<DeleteUserResponse> {
+  console.log(`SERVER ACTION: Attempting to delete user and profile for ID: ${userId}`);
+  if (!userId) {
+      return { success: false, error: "User ID is required for deletion." };
+  }
+  if (!DB_ID || !PROFILES_COLLECTION_ID) {
+      console.error("SERVER ACTION: Delete User - DB/Collection ID missing.");
+      return { success: false, error: "Server configuration error." };
+  }
+
+  try {
+      const { databases, users } = createAdminClient(); // Use 'users' service
+
+      // Step 1: Delete Profile Document (Optional first)
+      try {
+          console.log(`SERVER ACTION: Deleting profile document ${userId}`);
+          await databases.deleteDocument(DB_ID, PROFILES_COLLECTION_ID, userId);
+          console.log(`SERVER ACTION: Profile document ${userId} deleted.`);
+      } catch (dbError) {
+          if (dbError instanceof AppwriteException && dbError.code !== 404) {
+               console.error(`SERVER ACTION: Failed to delete profile document ${userId}:`, dbError);
+               // Log and continue, or throw depending on desired behavior
+          } else if (!(dbError instanceof AppwriteException)) {
+               console.error(`SERVER ACTION: Unexpected error deleting profile document ${userId}:`, dbError);
+               throw dbError;
+          }
+           console.warn(`SERVER ACTION: Profile document ${userId} not found or already deleted. Proceeding with auth deletion.`);
+      }
+
+
+      // Step 2: Delete Auth User using the 'users' service
+      console.log(`SERVER ACTION: Deleting auth user ${userId}`);
+      // CORRECTED AGAIN: Use users.delete(userId)
+      await users.delete(userId); // <--- FIX: Changed deleteUser to delete
+      console.log(`SERVER ACTION: Auth user ${userId} deleted.`);
+
+      // Optional: Revalidate user list path
+      revalidatePath('/admin/users'); // Adjust path if needed
+
+      return { success: true, message: `User deleted successfully.` };
+
+  } catch (error) {
+      console.error(`SERVER ACTION: Delete User Error for ${userId}:`, error);
+      if (error instanceof AppwriteException) {
+          let errMsg = error.message;
+          if (error.code === 404) {
+              if (error.message.includes('User not found')) {
+                  errMsg = `Auth user with ID ${userId} not found. Profile might have been deleted.`;
+              } else if (error.message.includes('Database not found') || error.message.includes('Collection not found')) {
+                  errMsg = "Server configuration error (DB/Collection not found).";
+              }
+          }
+          return { success: false, error: errMsg };
+      }
+      if (error instanceof Error) {
+           return { success: false, error: error.message };
+      }
+      return { success: false, error: "An unexpected error occurred during user deletion." };
   }
 }
