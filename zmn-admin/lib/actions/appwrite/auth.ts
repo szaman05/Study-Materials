@@ -302,3 +302,106 @@ export async function forgotPassword(
     };
   }
 }
+// --- NEW createUser function for Admin ---
+// --- MODIFIED createUser function for Admin ---
+export async function createUser(
+  userData: UserProfile & { password?: string }
+): Promise<AuthResponse> {
+  // --- *** ADD SERVER-SIDE LOGGING HERE *** ---
+  console.log("ADMIN CREATE USER: Received userData object:", JSON.stringify(userData, null, 2));
+
+  // Destructure AFTER logging to ensure we see the raw input
+  const {
+    email,
+    password,
+    fullName,
+    phone,
+    role,
+    roleDisplayName,
+    teamId,
+    isActive,
+    address,
+    city,
+    country,
+    postalCode,
+  } = userData || {}; // Add default empty object to prevent destructuring errors if userData is null/undefined
+
+  // --- Validation ---
+  // Check destructured values
+  if (!email || !password || !fullName || !role || !teamId || !roleDisplayName) {
+    // Log the destructured values for detailed debugging
+    console.error("ADMIN CREATE USER: Validation Failed - Missing required fields after destructuring.", {
+        email: email, password: password ? '******' : undefined, fullName: fullName, role: role, teamId: teamId, roleDisplayName: roleDisplayName
+    });
+    return { success: false, error: "Validation Failed: Email, password, name, role, teamId, and roleDisplayName are required." };
+  }
+  // ... rest of the validation and function logic remains the same ...
+  if (password.length < 8) {
+    return {
+      success: false,
+      error: "Password must be at least 8 characters long.",
+    };
+  }
+  if (!DB_ID || !PROFILES_COLLECTION_ID) {
+    console.error("ADMIN CREATE USER: Database ID or Profiles Collection ID is not configured.");
+    return {
+      success: false,
+      error: "Server configuration error (DB/Collection ID missing). Please contact support.",
+    };
+  }
+  if (!teamId) {
+     console.error("ADMIN CREATE USER: Team ID is missing after destructuring.");
+     return { success: false, error: "Server configuration error (Team ID missing)." };
+  }
+
+  // --- Try block remains the same ---
+  try {
+    const {
+      account: authAccount,
+      databases: adminDatabases,
+      teams: adminTeams,
+    } = createAdminClient();
+
+    // Step 1: Create Auth User
+    console.log(`ADMIN CREATE USER: Attempting to create auth user: ${email}`);
+    const newUser = await authAccount.create(ID.unique(), email, password, fullName);
+    const userId = newUser.$id;
+    console.log(`ADMIN CREATE USER: Successfully created auth user: ${userId}`);
+
+    // Step 2: Create Profile Document
+    console.log(`ADMIN CREATE USER: Creating profile document for user: ${userId}`);
+    const profileData = {
+      userId: userId, fullName: fullName, email: email, phone: phone || "", role: role,
+      roleDisplayName: roleDisplayName, teamId: teamId, isActive: isActive !== undefined ? isActive : true,
+      address: address || "", city: city || "", country: country || "", postalCode: postalCode || "",
+    };
+    await adminDatabases.createDocument(DB_ID, PROFILES_COLLECTION_ID, userId, profileData,
+      [Permission.read(Role.user(userId)), Permission.update(Role.user(userId))]
+    );
+    console.log(`ADMIN CREATE USER: Profile document created for user: ${userId}`);
+
+    // Step 3: Add User to Team
+    console.log(`ADMIN CREATE USER: Adding user ${userId} to team ${teamId} (Role: ${role})`);
+    await adminTeams.createMembership(teamId, [], email);
+    console.log(`ADMIN CREATE USER: User ${userId} added to team ${teamId}.`);
+
+    // Success
+    return {
+      success: true,
+      message: `User ${fullName} created successfully with role ${roleDisplayName}.`,
+    };
+
+  } catch (error) {
+    // --- Catch block remains the same ---
+    console.error("ADMIN CREATE USER: Error during creation process:", error);
+    if (error instanceof AppwriteException) {
+      const appwriteError = error as CustomAppwriteException;
+      let errorMessage = error.message || "Failed to create user.";
+      if (error.code === 409) { /* ... */ }
+      else if (error.code === 404 && error.message.includes('Team not found')) { /* ... */ }
+      else if (error.code === 400 && error.message.includes('Invalid document structure')) { /* ... */ }
+      return { success: false, error: errorMessage, details: appwriteError.response?.message };
+    }
+    return { success: false, error: "An unexpected error occurred during user creation." };
+  }
+}

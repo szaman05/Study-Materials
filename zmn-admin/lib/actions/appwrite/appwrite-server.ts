@@ -1,6 +1,6 @@
 // lib/appwrite-server.ts
 // Utility functions to initialize Appwrite SDK clients for Server Actions using TypeScript
-
+"use server"
 import {
   Client,
   Account,

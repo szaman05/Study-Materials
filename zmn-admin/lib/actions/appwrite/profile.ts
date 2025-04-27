@@ -422,6 +422,14 @@ export async function createUserProfile(
     return { success: false, error: "No data provided for new user profile." };
   }
 
+  // Add validation for targetUserId
+  if (!targetUserId) {
+    return {
+      success: false,
+      error: "Target user ID is required to create a profile.",
+    };
+  }
+
   try {
     const {
       account: sessionAccount,
@@ -576,10 +584,14 @@ export async function updateUserProfile(
   userData: UserProfile,
   targetUserId: string
 ): Promise<ProfileResponse> {
-  if (!userData || !targetUserId) {
+  if (!userData) {
+    return { success: false, error: "No data provided for profile update." };
+  }
+
+  if (!targetUserId) {
     return {
       success: false,
-      error: "No data or target user ID provided for profile update.",
+      error: "Target user ID is required to update a profile.",
     };
   }
 
